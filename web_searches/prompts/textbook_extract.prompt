@@ -1,0 +1,15 @@
+You will be provided an excerpt from a textbook and a question. Your task is to identify all the contexts from this textbook
+excerpt that are relevant to answering the question. You must remember that this excerpt might not be relevant enough and if 
+it is not, you must return the string "NOT_RELEVANT"
+
+The input is provided below:
+
+Textbook Excerpt={{textbook}}
+
+
+Question={{question}}
+
+
+You must return the answer as a list of strings that are extracts from the excerpt. You can return at most 10 strings so pick
+the best ones. Remeber that if the excerpt is not relevant just return a list containing one string 
+"NOT_RELEVANT". 
