@@ -71,4 +71,4 @@ def get_pdf_data(pdf_data):
         "section": problem_data[1],
         "problem": problem_data[2],
     }
-print(get_pdf_data(pdf_data))
+# print(get_pdf_data(pdf_data))

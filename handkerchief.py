@@ -19,14 +19,14 @@ class Handkerchief():
             self.chunks.append(chunk)
             tokens = tokens[15000:]
 
-    def sneeze(self, messages, **openai_kwargs):
+    async def sneeze(self, messages, **openai_kwargs):
         async def _search():
             results = []
             for chunk in self.chunks:
                 results.append(self.retrieve(messages, chunk))
             return await asyncio.gather(*results)
         
-        results = asyncio.run(_search())
+        results = await _search()
         results = [result.choices[0].message.content for result in results]
         return self.generate(messages, results, **openai_kwargs)
 
