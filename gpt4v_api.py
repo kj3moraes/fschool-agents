@@ -75,7 +75,7 @@ def send_prompt():
     pyautogui.keyUp('shiftleft')
     time.sleep(3) # so the iamges finish uploading
     pyautogui.keyUp('Fn') # so we don't press the emoji bar
-    pyautogui.typewrite("extract the text from this pdf")
+    pyautogui.typewrite("extract the text from this pdf. put it inside a code block. If there is a figure, please describe it")
     pyautogui.press('enter')
 
 def copy_text():
@@ -86,7 +86,9 @@ def copy_text():
     pyautogui.keyUp('Fn') # so we don't press the emoji bar
     pyautogui.typewrite("copy code")
     pyautogui.press('enter')
+    time.sleep(0.1)
     pyautogui.press('escape')
+    time.sleep(0.1)
     pyautogui.press('enter')
     return pyperclip.paste()
 

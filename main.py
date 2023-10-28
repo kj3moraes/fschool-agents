@@ -21,6 +21,6 @@ def main():
     if os.path.exists("./problemset.pdf"):
         os.remove("./problemset.pdf")
     wget.download(pdf_url, "./problemset.pdf")
-    text_extracted = gpt4vapi.extract_text_from_pdf("problemset.pdf")
+    text_extracted = gpt4v_api.extract_text_from_pdf("problemset.pdf")
     print(text_extracted)
 main()
