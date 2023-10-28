@@ -7,6 +7,8 @@ If you cannot solve the question based on the provided information, provide this
 
 Question={{question}}
 
-Textbook Info={{}}
+Textbook Info={{textbook}}
 
 Outside Sources={{sources}}
+
+Outside Context={{context}}

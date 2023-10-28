@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from metaphor_python import Metaphor
 import json 
-from .utils import fill_prompt
+from .utils import fill_prompt, prompt_chatgpt
 import openai
 import yaml
 from pathlib import Path
@@ -14,27 +14,17 @@ METAPHOR_API_KEY = os.getenv("METAPHOR_API_KEY")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 openai.api_key = OPENAI_API_KEY
 
-PROMPT_FILE_TEMPLATE = Path("./prompts/extract_content.prompt")
+PROMPT_FILE_TEMPLATE = Path("./web_searches/prompts/extract_content.prompt")
 
 client = Metaphor(api_key=METAPHOR_API_KEY)
 
 
-def prompt_chatgpt(prompt: str) -> str:
-
-    response = openai.Completion.create(
-        prompt=prompt,
-        model="gpt-4",  
-        temperature=0.6
-    )
-    return response.choices[0].text.strip()
-
-
-def return_relevant_results(unknowns: dict) -> Tuple[Dict, Dict]:
+def return_relevant_results(unknowns: list) -> Tuple[Dict, Dict]:
      
-    info_sources = {unknown: [] for unknown in unknown_keywords} 
-    info_contents = {unknown: [] for unknown in unknown_keywords}
+    info_sources = {unknown: [] for unknown in unknowns} 
+    info_contents = {unknown: [] for unknown in unknowns}
 
-    for unknown in unknown:
+    for unknown in unknowns:
         # Get the relevant information for the client 
         response = client.search(unknown,
             num_results=7,
@@ -50,6 +40,8 @@ def return_relevant_results(unknowns: dict) -> Tuple[Dict, Dict]:
                     "title": result.title
                 }
             )
+        
+        print("Got responses for our unknowns")
 
         all_contents = client.get_contents(ids)
         for content in all_contents.contents:
@@ -63,5 +55,6 @@ def return_relevant_results(unknowns: dict) -> Tuple[Dict, Dict]:
                     "extract": content_cleaned 
                 }
             )
+        print("Got content for our unknowns")
 
     return info_sources, info_contents

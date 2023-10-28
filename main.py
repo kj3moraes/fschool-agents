@@ -1,11 +1,20 @@
-from web_searches import retrieve_textbook_sections
+from web_searches import *
 from pathlib import Path
 import json
 
 textbook_path = Path("./textbooks/statistics.pdf")
-question = "What is the chi-squared distribution?"
+questions = ["what is the chi-squared distribution?"]
 
-answers = retrieve_textbook_sections(textbook_path, question)
-print(answers)
-with open("answer.json", "w+") as f:
+unknowns = {
+    "what is the chi-squared distribution?": {
+        "chi-squared distribution",
+        "statistics",
+        "probability distributions"
+    } 
+}
+
+
+answers = get_answers(questions, unknowns)
+
+with open("final_answers.json","w+") as f:
     json.dump(answers, f, indent=4)

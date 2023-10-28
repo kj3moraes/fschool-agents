@@ -12,6 +12,8 @@ CLAUDE_API_KEY = os.getenv("CLAUDE_API_KEY")
 client = Anthropic(
     api_key=CLAUDE_API_KEY
 )
+
+
 def read_pdf_with_sliding_window(pdf_path, window_size=20):
     """
     Read a PDF using a sliding window approach and yield text.
@@ -37,6 +39,7 @@ def read_pdf_with_sliding_window(pdf_path, window_size=20):
 
             yield pdf_text
 
+
 def retrieve_textbook_sections(textbook_path: Path, question: str) -> List:
 
     relevant_contexts = []
@@ -45,9 +48,6 @@ def retrieve_textbook_sections(textbook_path: Path, question: str) -> List:
                                     textbook=textbook_excerpt, 
                                     question=question)
         final_prompt = HUMAN_PROMPT + query_prompt + AI_PROMPT    
-
-        print("\n\n The final prompt is ", final_prompt)
-
         completion = client.completions.create(
                     model="claude-2",
                     prompt=final_prompt,
