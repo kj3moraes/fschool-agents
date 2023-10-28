@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from metaphor_python import Metaphor
 import json 
+from .utils import fill_prompt
 import openai
 import yaml
 from pathlib import Path
@@ -17,13 +18,6 @@ PROMPT_FILE_TEMPLATE = Path("./prompts/extract_content.prompt")
 
 client = Metaphor(api_key=METAPHOR_API_KEY)
 
-def fill_prompt(prompt_file: Path, info: str):
-    
-    with open(prompt_file) as f:
-        prompt = f.read()
-
-    prompt.replace("{{prompt}}", info)
-    return prompt
 
 def prompt_chatgpt(prompt: str) -> str:
 
@@ -60,7 +54,7 @@ def return_relevant_results(unknowns: dict) -> Tuple[Dict, Dict]:
         all_contents = client.get_contents(ids)
         for content in all_contents.contents:
 
-            query_prompt = fill_prompt(PROMPT_FILE_TEMPLATE, content.extract) 
+            query_prompt = fill_prompt(PROMPT_FILE_TEMPLATE, prompt=content.extract) 
             content_cleaned = prompt_chatgpt(query_prompt)
             info_contents[unknown].append(
                 {
