@@ -1,6 +1,7 @@
 import reasoner
 import chatgpt
 
+import json
 import os
 # Make a key: https://platform.openai.com/account/api-keys
 # os.environ["OPENAI_API_KEY"] = "<your key here>"
@@ -56,5 +57,15 @@ def get_completion(system_prompt, msg, model="gpt-3.5-turbo"):
     )
     # print(response)
     return response.choices[0].message["content"]
-print(get_completion("ONLY OUTPUT THE TEXTBOOK NAME AND AUTHOR.", pdf_data))
-print(get_completion("""ONLY RETURN A STRING ARRAY OF EACH PROBLEM IN THIS FORMAT ["Chapter.Section.Problem"].""", pdf_data))
+
+def get_pdf_data(pdf_data):
+    title_and_author = get_completion("ONLY OUTPUT THE TEXTBOOK NAME AND AUTHOR.", pdf_data)
+    arr = get_completion("""ONLY RETURN A STRING ARRAY OF EACH PROBLEM IN THIS FORMAT ["Chapter.Section.Problem"].""", pdf_data)
+    problem_data =  json.loads(arr)[0].split("."),
+    return {
+        "title_and_author": title_and_author,
+        "chapter": problem_data[0],
+        "section": problem_data[1],
+        "problem": problem_data[2],
+    }
+print(get_pdf_data(pdf_data))
