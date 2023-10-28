@@ -8,10 +8,11 @@ import pyperclip  # handy cross-platform clipboard text handler
 
 def convert_pdf_to_imgs():
     import os
-    if not os.path.exists('output'):
+    if os.path.exists('output'):
+        os.system('rm -rf output')
         os.makedirs('output')
     # Store Pdf with convert_from_path function
-    images = convert_from_path('ps3.pdf')
+    images = convert_from_path('hw3.pdf')
     
     for i in range(len(images)):
     
@@ -80,7 +81,7 @@ def copy_text():
     pyautogui.keyDown('command')
     pyautogui.press('f')
     pyautogui.keyUp('command')
-    time.sleep(1)
+    time.sleep(0.1)
     pyautogui.keyUp('Fn') # so we don't press the emoji bar
     pyautogui.typewrite("copy code")
     pyautogui.press('enter')
@@ -89,10 +90,18 @@ def copy_text():
     return pyperclip.paste()
 
 def main():
-    # num_imgs = convert_pdf_to_imgs()
-    # upload_imgs_to_chatgpt(num_imgs)
-    time.sleep(1)
-    print(copy_text())
-    # time.sleep(1)
-    # selectFile(1)
+    num_imgs = convert_pdf_to_imgs()
+    upload_imgs_to_chatgpt(num_imgs)
+
+    # every 10 seconds, try to copy the text. if the text between the
+    # last time we copied is the same as the current text copied, then
+    # return the final copied text
+    last_copied_text = ""
+    while True:
+        time.sleep(10)
+        current_copied_text = copy_text()
+        if current_copied_text == last_copied_text:
+            break
+        last_copied_text = current_copied_text
+    print(last_copied_text)
 main()
