@@ -12,7 +12,7 @@ def convert_pdf_to_imgs():
         os.system('rm -rf output')
         os.makedirs('output')
     # Store Pdf with convert_from_path function
-    images = convert_from_path('hw3.pdf')
+    images = convert_from_path('ps3.pdf')
     
     for i in range(len(images)):
     
@@ -56,7 +56,7 @@ def selectFile(ith_file:str):
     pyautogui.keyDown('command')
     pyautogui.press('f')
     pyautogui.keyUp('command')
-    time.sleep(1)
+    time.sleep(0.1)
     filename = 'scrapepage'+ str(ith_file) +'.jpg'
     pyautogui.keyUp('Fn') # so we don't press the emoji bar
     pyautogui.typewrite(filename)
@@ -76,6 +76,7 @@ def send_prompt():
     time.sleep(3) # so the iamges finish uploading
     pyautogui.keyUp('Fn') # so we don't press the emoji bar
     pyautogui.typewrite("extract the text from this pdf")
+    pyautogui.press('enter')
 
 def copy_text():
     pyautogui.keyDown('command')
