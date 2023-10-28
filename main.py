@@ -1,12 +1,22 @@
 
-import requests
-from bs4 import BeautifulSoup
-from fpdf import FPDF
+import reasoner
+import find_pdf_on_web
 import os
-from dotenv import load_dotenv
-from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
-from prompts import SUMMARIZE_QUESTION
+import wget
 
 def main():
-    print("hi")
+    input_text = "[X=13.012], [Y=3]"
+    fsreasoner = reasoner.FancyStructuredReasoner(system_prompt="DO NOT OUTPUT ANY MORE TEXT AFTER ANSWERING THE PROMPT. BE A ROBOT.", model='gpt-3.5-turbo')
+    fsreasoner.add_message("user", input_text)
+    course_code = fsreasoner.extract_info("the course code is X={x}", str)
+    assignment_num = fsreasoner.extract_info("the assignment number is Y={x}", str)
+    information_to_find = "assignment page for MIT opencourseware course code " + str(course_code)
+
+    print("information_to_find: ", information_to_find)
+    pdf_url = find_pdf_on_web.look_for_information(assignment_num, course_code)
+
+    print("url for assignment pdf: ", pdf_url)
+    if os.path.exists("./problemset.pdf"):
+        os.remove("./problemset.pdf")
+    wget.download(pdf_url, "./problemset.pdf")
 main()

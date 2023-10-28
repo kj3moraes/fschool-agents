@@ -1,4 +1,5 @@
 import asyncio
+from googlesearch import search
 import wget
 from bs4 import BeautifulSoup
 import requests
@@ -66,18 +67,66 @@ def get_download_url(url):
     else:
         print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
 
+def find_assignments_page_via_google(course_code):
+    query = "assignment page for MIT opencourseware course code " + str(course_code)
+    links = list(search(query))
+    for url in links:
+        if(url.endswith("pages/assignments/")):
+            return url
+    
 
-async def look_for_information(information_to_find):
+def look_for_information(assignment_num, course_code):
     # # we need to import this after we use our openai key
     # from handkerchief import Handkerchief
-    assignments_page = find_assignments_page(information_to_find)
-    urls = extract_all_urls(assignments_page)
-    # print("all urls", urls)
-    assignment_url = format_questions.get_completion("in this list of urls, find the url that is the " + information_to_find, str(urls))
+    # assignments_page = find_assignments_page(information_to_find)
+    assignments_page = find_assignments_page_via_google(course_code)
+    print("assignments_page", assignments_page)
+    # urls = extract_all_urls(assignments_page)
+    page_text = extract_page_text(assignments_page)
+    # print("page_text", page_text)
+    assignment_url_raw = format_questions.get_completion("find the url that is for assignment " + str(assignment_num), page_text)
+    assignment_url = requests.compat.urljoin(assignments_page, assignment_url_raw)
+    print("assignment_url", assignment_url)
     download_url = get_download_url(assignment_url)
      # Convert relative URLs to absolute URLs
     absolute_url = requests.compat.urljoin(assignment_url, download_url)
     return absolute_url
+
+def extract_page_text(url):
+    response = requests.get(url)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the HTML content of the page using BeautifulSoup
+
+        # Create a BeautifulSoup object
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Find the element with the specified id
+        course_content_section = soup.find(id='course-content-section')
+
+        # Check if the element exists
+        if course_content_section:
+            # Get the HTML contents of the element
+            # html_contents = course_content_section.contents
+            return str(course_content_section.contents)
+
+            # Convert the contents to a string (optional)
+            html_string = course_content_section.prettify()
+
+            # Print the HTML contents
+            for content in html_contents:
+                print(content)
+
+            # Print the HTML string (optional)
+            print(html_string)
+        else:
+            print("Element with id 'course-content-section' not found.")
+
+    else:
+        print(f"Failed to retrieve the web page. Status code: {response.status_code}")
+    print("rip cant find html text")
+    return "rip"
 
 async def async_load_playwright(url: str) -> str:
     """Load the specified URLs using Playwright and parse using BeautifulSoup."""
@@ -113,5 +162,7 @@ async def main():
     information_to_find = "pdf file link for assignment 3 from MIT opencourseware course code Hydrodynamics (13.012)"
     # resp = metaphor_search(information_to_find).results
     resp = await look_for_information(information_to_find)
+    if os.path.exists("./problemset.pdf"):
+        os.remove("./problemset.pdf")
     wget.download(resp, "./problemset.pdf")
-asyncio.run(main())
+# asyncio.run(main())
