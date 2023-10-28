@@ -3,6 +3,7 @@
 from pdf2image import convert_from_path
 import time
 import pyautogui
+import pyperclip  # handy cross-platform clipboard text handler
  
 
 def convert_pdf_to_imgs():
@@ -30,9 +31,9 @@ def upload_imgs_to_chatgpt(num_imgs: int):
 
     # get to the img button
     pyautogui.press('tab')
-    searchFile()
-    selectFile(0)
-    for i in range(1, num_imgs):
+    # searchFile()
+    # selectFile(0)
+    for i in range(0, num_imgs):
         pyautogui.press('enter')  # press upload img
         selectFile(i)
     send_prompt()
@@ -51,34 +52,47 @@ def searchFile():
     pyautogui.press('tab') # move the selection to the img
 
 def selectFile(ith_file:str):
+    pyautogui.keyDown('command')
+    pyautogui.press('f')
+    pyautogui.keyUp('command')
     time.sleep(1)
-
-    # pyautogui.keyDown('command')
-    # pyautogui.press('f')
-    # pyautogui.keyUp('command')
-    # time.sleep(1)
-    # filename = 'scrapepage'+ str(ith_file) +'.jpg'
-    # pyautogui.typewrite(filename, interval=0.2, _pause=True)
+    filename = 'scrapepage'+ str(ith_file) +'.jpg'
+    pyautogui.keyUp('Fn') # so we don't press the emoji bar
+    pyautogui.typewrite(filename)
     
-    # time.sleep(2)
-    # pyautogui.press('enter')
-    # pyautogui.press('tab') # move the selection to the img
-    # pyautogui.press('tab') # move the selection to the img
+    time.sleep(1)
+    pyautogui.press('enter')
+    pyautogui.press('tab') # move the selection to the img
+    pyautogui.press('tab') # move the selection to the img
     pyautogui.press('down', presses=ith_file + 1)
     pyautogui.press('enter')  # upload the img
-    time.sleep(3)
+    time.sleep(1)
 
 def send_prompt():
     pyautogui.keyDown('shiftleft')
     pyautogui.press('tab')
     pyautogui.keyUp('shiftleft')
-    time.sleep(2)
+    time.sleep(3) # so the iamges finish uploading
     pyautogui.keyUp('Fn') # so we don't press the emoji bar
     pyautogui.typewrite("extract the text from this pdf")
 
+def copy_text():
+    pyautogui.keyDown('command')
+    pyautogui.press('f')
+    pyautogui.keyUp('command')
+    time.sleep(1)
+    pyautogui.keyUp('Fn') # so we don't press the emoji bar
+    pyautogui.typewrite("copy code")
+    pyautogui.press('enter')
+    pyautogui.press('escape')
+    pyautogui.press('enter')
+    return pyperclip.paste()
+
 def main():
-    num_imgs = convert_pdf_to_imgs()
-    upload_imgs_to_chatgpt(num_imgs)
+    # num_imgs = convert_pdf_to_imgs()
+    # upload_imgs_to_chatgpt(num_imgs)
+    time.sleep(1)
+    print(copy_text())
     # time.sleep(1)
     # selectFile(1)
 main()
