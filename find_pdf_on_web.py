@@ -1,6 +1,8 @@
-# GPT-4 powered playwright browser for using the internet
+import asyncio
+from handkerchief import Handkerchief
 
-# We use metaphor search but you can use serpAPI: https://serpapi.com/
+# os.environ["OPENAI_API_KEY"] = 
+openai.api_key = "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"#open('openai_key.txt', 'r').read().strip('\n')
 
 def metaphor_search(information_to_find):
     from metaphor_python import Metaphor
@@ -18,7 +20,6 @@ def metaphor_search(information_to_find):
 async def look_for_information(information_to_find):
     resp = metaphor_search(information_to_find).results
 
-    from handkerchief import Handkerchief
     handkerchief = Handkerchief()
 
     for item in resp:
@@ -26,7 +27,7 @@ async def look_for_information(information_to_find):
         handkerchief.index(content)
 
     messages = [{'role': 'user', 'content': information_to_find}]
-    response = handkerchief.sneeze(messages, model='gpt-4', stream=False)
+    response = handkerchief.sneeze(messages, model='gpt-3.5-turbo', stream=False)
     return response
 
 async def async_load_playwright(url: str) -> str:
@@ -56,4 +57,4 @@ async def async_load_playwright(url: str) -> str:
         await browser.close()
     return results
 
-look_for_information("")
+asyncio.run(look_for_information("date of birth of barack obama"))
