@@ -5,6 +5,7 @@ import os
 import wget
 
 def main():
+    os.environ["OPENAI_API_KEY"] = open('openai_key.txt', 'r').read().strip('\n')
     input_text = "[X=13.012], [Y=3]"
     fsreasoner = reasoner.FancyStructuredReasoner(system_prompt="DO NOT OUTPUT ANY MORE TEXT AFTER ANSWERING THE PROMPT. BE A ROBOT.", model='gpt-3.5-turbo')
     fsreasoner.add_message("user", input_text)
