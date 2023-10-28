@@ -18,14 +18,31 @@ while True:
     print(line)
     unknown_keywords.append(line)
 
-info_sources = []
+print(unknown_keywords)
+
+info_sources = {unknown: [] for unknown in unknown_keywords} 
+info_contents = {unknown: [] for unknown in unknown_keywords}
+
 for unknown in unknown_keywords:
-    response = client.search("funny article about tech culture",
+    response = client.search(unknown,
         num_results=5,
-        include_domains=["nytimes.com", "wsj.com"],
-        start_published_date="2023-06-12"
     )
-    print(response)
-    print(response["ID"])
-    print(response["URL"])
+    
+    ids = []
+    for result in response.results:
+        print(result.title, result.url, "id = ", result.id)
+        ids.append(result.id)
+        info_sources[unknown].append(
+            {
+                "url": result.url,
+                "title": result.title
+            }
+        )
+
+    print(info_sources) 
+    content = client.get_contents(ids)
+    info_contents[unknown].append(content)
+    print(content)
+
+
 

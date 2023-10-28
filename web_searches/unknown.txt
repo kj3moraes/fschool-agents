@@ -1,4 +1,3 @@
-Thermodynamics
-Black Body Radiaiton
-Spectroscopy
+Introduction to Electrodynamics textbook
+
 
