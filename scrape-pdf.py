@@ -30,29 +30,45 @@ def upload_imgs_to_chatgpt(num_imgs: int):
 
     # get to the img button
     pyautogui.press('tab')
-    for i in range(num_imgs):
+    searchFile()
+    selectFile(0)
+    for i in range(1, num_imgs):
+        pyautogui.press('enter')  # press upload img
         selectFile(i)
 
-def selectFile(ith_file:str):
+def searchFile():
     pyautogui.press('enter')  # press upload img
     time.sleep(1)
-
     pyautogui.keyDown('command')
     pyautogui.press('f')
     pyautogui.keyUp('command')
-    filename = 'scrapepage'+ str(ith_file) +'.jpg'
+    time.sleep(1)
+    filename = 'scrapepage'
     pyautogui.typewrite(filename)
-    time.sleep(2)
     pyautogui.press('enter')
     pyautogui.press('tab') # move the selection to the img
     pyautogui.press('tab') # move the selection to the img
-    pyautogui.press('down')
-    pyautogui.press('enter')  # upload the img
+
+def selectFile(ith_file:str):
     time.sleep(1)
+
+    # pyautogui.keyDown('command')
+    # pyautogui.press('f')
+    # pyautogui.keyUp('command')
+    # time.sleep(1)
+    # filename = 'scrapepage'+ str(ith_file) +'.jpg'
+    # pyautogui.typewrite(filename, interval=0.2, _pause=True)
+    
+    # time.sleep(2)
+    # pyautogui.press('enter')
+    # pyautogui.press('tab') # move the selection to the img
+    # pyautogui.press('tab') # move the selection to the img
+    pyautogui.press('down', presses=ith_file + 1)
+    pyautogui.press('enter')  # upload the img
 
 def main():
     num_imgs = convert_pdf_to_imgs()
     upload_imgs_to_chatgpt(num_imgs)
-    time.sleep(1)
-    selectFile(0)
+    # time.sleep(1)
+    # selectFile(1)
 main()
