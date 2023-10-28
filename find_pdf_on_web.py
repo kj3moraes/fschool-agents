@@ -1,5 +1,7 @@
 import asyncio
+import time
 from googlesearch import search
+import pyperclip  # handy cross-platform clipboard text handler
 import wget
 from serpapi import GoogleSearch
 from bs4 import BeautifulSoup
@@ -7,6 +9,7 @@ import requests
 import os
 import format_questions
 import json
+import pyautogui
 
 
 os.environ["OPENAI_API_KEY"] = open('openai_key.txt', 'r').read().strip('\n')
@@ -100,12 +103,39 @@ def find_assignments_page_via_google(course_code):
     for url in links:
         if(url.endswith("pages/assignments/")):
             return url
+        
+def find_assignments_page_via_google2(course_code):
+    # query = "assignment page for MIT opencourseware course code pages/assignments/ " + str(course_code) + "  site:mit.edu"
+    query = "assignments page for course " + str(course_code) + " site:ocw.mit.edu"
+    pyautogui.keyDown('command')
+    pyautogui.press('space')
+    pyautogui.keyUp('command')
+    pyautogui.keyUp('Fn') # so we don't press the emoji bar
+    pyautogui.typewrite("https://www.google.com/")
+    pyautogui.press('enter')
+    time.sleep(2)
+    pyautogui.keyUp('Fn') # so we don't press the emoji bar
+    pyautogui.typewrite(query)
+    pyautogui.press('enter')
+    time.sleep(2)
+    pyautogui.press('tab', presses=21)
+    pyautogui.press('enter')
+
+    pyautogui.keyDown('command')
+    pyautogui.press('l')
+    pyautogui.press('c')
+    pyautogui.keyUp('command')
+    time.sleep(1)
+
+    return pyperclip.paste()
+
     
 
 def look_for_information(assignment_num, course_code):
     # # we need to import this after we use our openai key
     # from handkerchief import Handkerchief
-    assignments_page = find_assignments_page_via_google(course_code)
+    # assignments_page = find_assignments_page(course_code)
+    assignments_page = find_assignments_page_via_google2(course_code)
     print("assignments_page", assignments_page)
     # urls = extract_all_urls(assignments_page)
     page_text = extract_page_text(assignments_page)
@@ -194,6 +224,6 @@ async def main():
 # asyncio.run(main())
 
 def main2():
-    print(find_assignments_page_via_google("13.012"))
+    print(find_assignments_page_via_google2("13.012"))
 
-main2()
+# main2()
