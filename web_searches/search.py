@@ -18,7 +18,6 @@ PROMPT_FILE_TEMPLATE = Path("./web_searches/prompts/extract_content.prompt")
 
 client = Metaphor(api_key=METAPHOR_API_KEY)
 
-
 def return_relevant_results(unknowns: list) -> Tuple[Dict, Dict]:
      
     info_sources = {unknown: [] for unknown in unknowns} 
@@ -27,7 +26,7 @@ def return_relevant_results(unknowns: list) -> Tuple[Dict, Dict]:
     for unknown in unknowns:
         # Get the relevant information for the client 
         response = client.search(unknown,
-            num_results=7,
+            num_results=4,
         )
  
         ids = []
@@ -45,7 +44,7 @@ def return_relevant_results(unknowns: list) -> Tuple[Dict, Dict]:
 
         all_contents = client.get_contents(ids)
         for content in all_contents.contents:
-
+            print(f"For contents {content.title} we are now cleaning")
             query_prompt = fill_prompt(PROMPT_FILE_TEMPLATE, prompt=content.extract) 
             content_cleaned = prompt_chatgpt(query_prompt)
             info_contents[unknown].append(

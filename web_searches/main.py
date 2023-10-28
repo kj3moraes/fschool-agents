@@ -5,10 +5,11 @@ from .search import *
 
 def get_answers(questions: list, question_unknowns: Dict[str, list], textbook=None):
 
-    if textbook is not None:
-        pass
-
-    answers = []
+    # q_ctx_from_textbook = {}
+    # if textbook is not None:
+    #     for question in question:
+    #         pass
+ 
     for question in questions:
         unknowns_for_question = question_unknowns[question]
         rel_sources, rel_info = return_relevant_results(unknowns_for_question)   
@@ -25,10 +26,15 @@ def get_answers(questions: list, question_unknowns: Dict[str, list], textbook=No
             context=rel_info_str
         )
 
-        print("Going to prompt GPT4 with the query prompt for ")
+        with open("Final_prompt.txt", "w+") as f:
+            f.write(query_prompt)
+
+        print("Going to prompt GPT4 with the query prompt")
         answer = prompt_chatgpt(query_prompt)
         print(f"Got answer for {question}")
         print(answer)
         answers.append(answer)
+
+
 
     return answers
