@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 import requests
 import os
 import format_questions
+import json
+
 
 os.environ["OPENAI_API_KEY"] = open('openai_key.txt', 'r').read().strip('\n')
 
@@ -47,7 +49,7 @@ def find_assignments_page_with_serp(course_code):
         "api_key": apiKey,
     }
 
-    return GoogleSearch(params)
+    return json.dumps(GoogleSearch(params).get_dict(), sort_keys=True, indent=4, separators=(',', ': '))
 
 def extract_all_urls(url):
     response = requests.get(url)
@@ -99,8 +101,7 @@ def find_assignments_page_via_google(course_code):
 def look_for_information(assignment_num, course_code):
     # # we need to import this after we use our openai key
     # from handkerchief import Handkerchief
-    assignments_page = find_assignments_page(course_code)
-    # assignments_page = find_assignments_page_via_google(course_code)
+    assignments_page = find_assignments_page_via_google(course_code)
     print("assignments_page", assignments_page)
     # urls = extract_all_urls(assignments_page)
     page_text = extract_page_text(assignments_page)
