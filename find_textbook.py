@@ -9,6 +9,7 @@ import pdfreader
 import os
 from dotenv import load_dotenv
 import sys
+# import reasoner
 
 load_dotenv()
 
@@ -47,24 +48,29 @@ def search_table_of_contents(excerpt, section):
     )
     return completion.completion
 
-def extract_section_pages(pdf_path, start_page, limit_pages=10):
+def extract_section_pages(pdf_path, start_page, limit_pages=30):
     text = extract_text(pdf_path, page_numbers=list(range(start_page, start_page + limit_pages)))
     return text
 
 def extract_question(excerpt, question):
+
     completion = anthropic.completions.create(
         model="claude-2",
         max_tokens_to_sample=1000,
         prompt=f"{HUMAN_PROMPT} {EXTRACT_QUESTION} <excerpt>{excerpt}<excerpt> <question>{question}<question> {AI_PROMPT}",
     )
     return completion.completion
+    # fsreasoner = reasoner.FancyStructuredReasoner(system_prompt="DO NOT OUTPUT ANY MORE TEXT AFTER ANSWERING THE PROMPT. BE A ROBOT.", model='gpt-3.5-turbo')
+    # fsreasoner.add_message("user", excerpt)
+    # return fsreasoner.extract_info("the text in page {x} is {x}", int)
+    
 
 
 textbook_name = "John A. Rice, Third Edition."
 # textbook_name  = "The Elements of Statistical Learning: Data Mining, Inference, and Prediction by Trevor Hastie, Robert Tibshirani, and Jerome Friedman."
 chapter = "8"
 section = "10"
-question = "21."
+question = "21"
 
 # link = find_textbook_link(textbook_name)
 # generate_textbook_pdf(link)
@@ -72,21 +78,39 @@ question = "21."
 pdf_path = "downloaded_textbook.pdf"
 section_title = f"8.10"
 excerpt = extract_pages(pdf_path)
+pattern = fr"({section_title}.{{0,1000}})"
+match = re.search(pattern, excerpt, re.DOTALL)
+excerpt = match.group(1)
+
 page_text = search_table_of_contents(excerpt, section_title)
+print(page_text)
 
 # text = "Based on the provided excerpt and section number, the page number containing Section 8.10 is 312."
 match = re.search(r"(\b\d+\b)(?!.*\b\d+\b)", page_text)
-page = 312
 try:
     page = int(match.group(1))
 except AttributeError:
+    print("ERROR: Page not found.")
     page = 312
 
 
-output = extract_section_pages(pdf_path, page)
-question_content = extract_question(output, question)
 
-# print(output)
-print(question_content)
+output = extract_section_pages(pdf_path, page)
+pattern = fr"({question}(?:\.|\)).{{0,1000}})"
+match = re.search(pattern, output, re.DOTALL)
+
+
+try:
+    output = match.group(1)
+    question_content = extract_question(output, question)
+    print(question_content)
+except AttributeError:
+    print("ERROR: Question not found.")
+
+
+# question_content = extract_question(output, question)
+
+# # print(output)
+# print(question_content)
 
 
