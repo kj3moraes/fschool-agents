@@ -59,9 +59,12 @@ def get_completion(system_prompt, msg, model="gpt-3.5-turbo"):
     return response.choices[0].message["content"]
 
 def get_pdf_data(pdf_data):
-    title_and_author = get_completion("ONLY OUTPUT THE TEXTBOOK NAME AND AUTHOR.", pdf_data)
+    # title_and_author = get_completion("ONLY OUTPUT THE TEXTBOOK NAME AND AUTHOR.", pdf_data)
     arr = get_completion("""ONLY RETURN A STRING ARRAY OF EACH PROBLEM IN THIS FORMAT ["Chapter.Section.Problem"].""", pdf_data)
+    print(arr)
+    print(json.loads(arr))
     problem_data =  json.loads(arr)[0].split("."),
+    print(problem_data)
     return {
         "title_and_author": title_and_author,
         "chapter": problem_data[0],
