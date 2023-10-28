@@ -8,6 +8,7 @@ import os
 import format_questions
 import json
 
+
 os.environ["OPENAI_API_KEY"] = open('openai_key.txt', 'r').read().strip('\n')
 
 def metaphor_search(information_to_find):
@@ -100,7 +101,6 @@ def find_assignments_page_via_google(course_code):
 def look_for_information(assignment_num, course_code):
     # # we need to import this after we use our openai key
     # from handkerchief import Handkerchief
-    # assignments_page = find_assignments_page(course_code)
     assignments_page = find_assignments_page_via_google(course_code)
     print("assignments_page", assignments_page)
     # urls = extract_all_urls(assignments_page)

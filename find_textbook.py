@@ -9,7 +9,6 @@ import pdfreader
 import os
 from dotenv import load_dotenv
 import sys
-# import reasoner
 
 load_dotenv()
 
@@ -53,17 +52,16 @@ def extract_section_pages(pdf_path, start_page, limit_pages=30):
     return text
 
 def extract_question(excerpt, question):
-
     completion = anthropic.completions.create(
         model="claude-2",
         max_tokens_to_sample=1000,
         prompt=f"{HUMAN_PROMPT} {EXTRACT_QUESTION} <excerpt>{excerpt}<excerpt> <question>{question}<question> {AI_PROMPT}",
     )
     return completion.completion
+
     # fsreasoner = reasoner.FancyStructuredReasoner(system_prompt="DO NOT OUTPUT ANY MORE TEXT AFTER ANSWERING THE PROMPT. BE A ROBOT.", model='gpt-3.5-turbo')
     # fsreasoner.add_message("user", excerpt)
     # return fsreasoner.extract_info("the text in page {x} is {x}", int)
-    
 
 
 textbook_name = "John A. Rice, Third Edition."
