@@ -35,6 +35,7 @@ def upload_imgs_to_chatgpt(num_imgs: int):
     for i in range(1, num_imgs):
         pyautogui.press('enter')  # press upload img
         selectFile(i)
+    send_prompt()
 
 def searchFile():
     pyautogui.press('enter')  # press upload img
@@ -65,6 +66,15 @@ def selectFile(ith_file:str):
     # pyautogui.press('tab') # move the selection to the img
     pyautogui.press('down', presses=ith_file + 1)
     pyautogui.press('enter')  # upload the img
+    time.sleep(3)
+
+def send_prompt():
+    pyautogui.keyDown('shiftleft')
+    pyautogui.press('tab')
+    pyautogui.keyUp('shiftleft')
+    time.sleep(2)
+    pyautogui.keyUp('Fn') # so we don't press the emoji bar
+    pyautogui.typewrite("extract the text from this pdf")
 
 def main():
     num_imgs = convert_pdf_to_imgs()
