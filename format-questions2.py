@@ -124,11 +124,20 @@ class FancyStructuredReasoner(reasoner.Reasoner):
         return value
     
 
+from pydantic import BaseModel
+class Problem(BaseModel):
+    assignment: int
+    course_code: str
+
 os.environ["OPENAI_API_KEY"] = open('openai_key.txt', 'r').read().strip('\n')
 # reasoner = FancyStructuredReasoner(system_prompt="DO NOT OUTPUT ANY MORE TEXT AFTER ANSWERING THE PROMPT. BE A ROBOT.", model='gpt-3.5-turbo')
-reasoner = FancyStructuredReasoner(system_prompt="DO NOT OUTPUT ANY MORE TEXT AFTER ANSWERING THE PROMPT. BE A ROBOT.", model='gpt-4')
-reasoner.add_message('user', pdf_data)
+reasoner = FancyStructuredReasoner(system_prompt="DO NOT OUTPUT ANY MORE TEXT AFTER ANSWERING THE PROMPT. BE A ROBOT.", model='gpt-3.5-turbo')
+# reasoner.add_message('user', pdf_data)
 # print(reasoner.extract_info("The textbook name and author is {name_and_author}", str))
-print(reasoner.extract_info("The problem Chapter,Section, and Problem is problem: {chapter_section_problem}", str))
+reasoner.add_message("user", "Please submit your solutions to assignment 5 from MIT opencourseware course code 3E.45")
+print(reasoner.extract_info("the assignment number is {x}", int))
+print(reasoner.extract_info("the course code is {x}", str))
+
+
 # print(reasoner.extract_info("", List[str]))
 # reasoner.add_message('user', """ONLY RETURN A STRING ARRAY OF EACH PROBLEM IN THIS FORMAT ["Chapter.Section.Problem"].""")
