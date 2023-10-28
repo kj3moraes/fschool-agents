@@ -35,7 +35,6 @@ def generate_textbook_pdf(link):
 
 def extract_pages(pdf_path, limit_pages=10):
     text = extract_text(pdf_path, page_numbers=list(range(limit_pages)))
-    print(text)
     return text
 
 def search_table_of_contents(excerpt, section):
