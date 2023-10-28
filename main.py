@@ -3,6 +3,7 @@ import reasoner
 import find_pdf_on_web
 import os
 import wget
+import gpt4v_api
 
 def main():
     os.environ["OPENAI_API_KEY"] = open('openai_key.txt', 'r').read().strip('\n')
@@ -20,4 +21,6 @@ def main():
     if os.path.exists("./problemset.pdf"):
         os.remove("./problemset.pdf")
     wget.download(pdf_url, "./problemset.pdf")
+    text_extracted = gpt4vapi.extract_text_from_pdf("problemset.pdf")
+    print(text_extracted)
 main()
