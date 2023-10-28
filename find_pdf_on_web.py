@@ -1,6 +1,7 @@
 import asyncio
 from googlesearch import search
 import wget
+from serpapi import GoogleSearch
 from bs4 import BeautifulSoup
 import requests
 import os
@@ -20,13 +21,33 @@ def metaphor_search(information_to_find):
 
     return response
 
-def find_assignments_page(information_to_find):
-    resp = metaphor_search(information_to_find).results
+def find_assignments_page(course_code):
+    # query = "MIT opencourseware course code " + str(course_code) + ". assignments page site:mit.edu"
+    query = "MIT opencourseware course code " + str(course_code) + " name"
+    resp = metaphor_search(query).results
+    print(resp)
     all_urls = [item.url for item in resp]
     for url in all_urls:
         if(url.endswith("pages/assignments/")):
             return url
     return "unknown"
+
+def find_assignments_page_with_serp(course_code):
+    apiKey = "367c7199e7d9478eb8f29b1a3e3f15b3c143ae053729d0a6ec5caabdf4e8073d"
+    query = "MIT opencourseware course code " + str(course_code) + " assignments page site:mit.edu"
+    # query = "MIT opencourseware course code " + str(course_code) + " name"
+    requests.get("https://serpapi.com/search?q=")
+
+    params = {
+        "q": query,
+        "location": "Austin, Texas, United States",
+        "hl": "en",
+        "gl": "us",
+        "google_domain": "google.com",
+        "api_key": apiKey,
+    }
+
+    return GoogleSearch(params)
 
 def extract_all_urls(url):
     response = requests.get(url)
@@ -68,7 +89,7 @@ def get_download_url(url):
         print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
 
 def find_assignments_page_via_google(course_code):
-    query = "assignment page for MIT opencourseware course code " + str(course_code)
+    query = "assignment page for MIT opencourseware course code " + str(course_code) + " site:mit.edu"
     links = list(search(query))
     for url in links:
         if(url.endswith("pages/assignments/")):
@@ -78,8 +99,8 @@ def find_assignments_page_via_google(course_code):
 def look_for_information(assignment_num, course_code):
     # # we need to import this after we use our openai key
     # from handkerchief import Handkerchief
-    # assignments_page = find_assignments_page(information_to_find)
-    assignments_page = find_assignments_page_via_google(course_code)
+    assignments_page = find_assignments_page(course_code)
+    # assignments_page = find_assignments_page_via_google(course_code)
     print("assignments_page", assignments_page)
     # urls = extract_all_urls(assignments_page)
     page_text = extract_page_text(assignments_page)
@@ -166,3 +187,8 @@ async def main():
         os.remove("./problemset.pdf")
     wget.download(resp, "./problemset.pdf")
 # asyncio.run(main())
+
+def main2():
+    print(find_assignments_page_with_serp("13.012"))
+
+main2()
