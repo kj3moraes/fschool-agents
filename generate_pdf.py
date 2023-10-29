@@ -1,4 +1,5 @@
 from fpdf import FPDF
+import nltk
 
 QUESTIONS_WITH_WIKI = [
     {
@@ -103,13 +104,14 @@ def generate_pdf(questions_with_wiki, answers):
             answer = item['answer']
 
             answer = ''.join(c for c in answer if ord(c) < 256)
+            encoded_answer = bytes(answer, 'utf-8').decode('utf-8', 'ignore')
             
             # Display question
             pdf.set_fill_color(220, 220, 220)  # light gray background for questions
             pdf.multi_cell(0, 10, question, 0, 'L', 1)  # 'L' for left alignment, 1 for filling the cell with the fill color
             
             # Display answer
-            pdf.multi_cell(0, 10, answer)
+            pdf.multi_cell(0, 10, str(encoded_answer))
             pdf.ln(5)  # space between Q&A pairs
     
     pdf.output("answer.pdf")
