@@ -533,6 +533,13 @@ def run_generate_answer_agent_test():
 
     print(f"===== Outputs for the second set have been stored as JSON files in folder {folder_name2}. =====")
 
+def run_raw_assignment_parser_agent(raw_assignment):
+    answer = llm(RAW_ASSIGNMENT_PARSER_TEMPLATE.format_messages(
+            assignment=raw_assignment
+        ))
+    
+    return json.loads(answer.content)
+
 def run_unknown_source_agent(questions_assignment):
     # Loop to generate answers and save them to JSON files for the first set of questions
     answers1 = []
@@ -566,11 +573,45 @@ def run_generate_answer_agent(questions_assignment_with_wiki):
 
     return answers2
 
+def add_wiki(question):
+    question['wiki'] = ''
+    return question
+
 if __name__ == "__main__":
     # Read the content from a text file located at 'example.txt'
-    file_content = read_text_file("extracted_assignment.txt")
+    raw_assignment = read_text_file("extracted_assignment_no1.txt")
 
     # Print the content
-    print(file_content)
+    print("===== RAW ASSIGNMENT =====")
+    print(raw_assignment)
+    print("==========================")
+
+    parsed_assignment = run_raw_assignment_parser_agent(raw_assignment)
+
+    print("===== PARSED ASSIGNMENT =====")
+    print(parsed_assignment)
+    print("=============================")
+    
+    questions = parsed_assignment['questions']
+
+    unknown_sources = run_unknown_source_agent(questions)
+
+    print("===== UNKNOWN SOURCES =====")
+    print(unknown_sources)
+    print("===========================")
+
+    questions_wiki = [add_wiki(question) for question in questions]
+    
+    print("===== QUESTION WIKI =====")
+    print(questions_wiki)
+    print("=========================")
+
+    generated_answers = run_generate_answer_agent(questions_wiki)
+
+    answers = generated_answers['answers']
+
+    print("===== ANSWERS =====")
+    print(answers)
+    print("===================")
     # run_unknown_source_agent_test()
     # run_generate_answer_agent_test()
