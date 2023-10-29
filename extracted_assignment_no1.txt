@@ -1,0 +1,51 @@
+2.016 Homework #3
+Prof. A. Techet; Fall 2005
+Issued: September 27, 2005
+Due: October 4, 2005
+
+Problem 1: Unsteady Potential Flow and Added Mass
+
+a. Derive added mass around a sphere. Hint: if you print out the Added Mass Derivation handout, the math is all done for you, and you can hand that worksheet in. All you have to do is draw a picture on the page illustrating how to set up the integral (i.e. a picture of a sphere showing the coordinate system, 𝐹, 𝜌, 𝑑A, 𝑅, 𝑟 and 𝜃, and another picture showing how to calculate 𝑑A from 𝑑A.
+b. In this derivation, are we integrating the static pressure or the dynamic pressure? What happens if we include the other pressure term as well?
+c. The equation sheet says that the potential function for flow around a stationary sphere is 𝜙 = 𝑈 cos(𝜃) * (𝑅^3 / 𝑟^2 + 𝑅^2), but the potential function given in the derivation is 𝜙 = 𝑈 cos(𝜃) * (𝑅^3 / 𝑟^2). What is the difference between these two potential functions? What type of flow does this correspond to? Why would we not include that in the derivation? (Hint: think about the answer to part d.)
+d. True or false, 𝜙 = 𝑈 cos(𝜃) * (𝑅^3 / 2𝑟^2) corresponds to flow around a moving sphere in quiescent fluid?
+e. Derive added mass around a cylinder. Just draw a picture on the page illustrating how to set up the integral (i.e. a picture of a sphere showing the coordinate system, 𝐹, 𝜌, 𝑑A, 𝑅, 𝑟 and 𝜃, and another picture showing how to calculate 𝑑A from 𝑑A.
+f. In this derivation, are we integrating the static pressure or the dynamic pressure? What happens if we include the other pressure term as well?
+g. In class, we learned that the potential function for flow around a stationary cylinder is 𝜙 = 𝑈 cos(𝜃) * (𝑅^2 / 𝑟), but the potential function given in the derivation is 𝜙 = 𝑈 cos(𝜃) * (𝑅^2 / 𝑟). What is the difference between these two potential functions? What type of flow does this correspond to? Why would we not include that in the derivation? (Hint: think about the answer to part d.)
+h. True or false, 𝜙 = 𝑈 cos(𝜃) * (𝑅^2 / 𝑟) corresponds to flow around a moving cylinder in quiescent fluid?
+
+Problem 2: Pressure Distribution Around a Stationary Cylinder
+
+a. The potential function for flow around a stationary cylinder is 𝜙 = 𝑈 cos(𝜃) * (𝑅^2 / 𝑟 + 𝑅), where 𝑈 is the free-stream velocity far away from the cylinder. Find the velocity field 𝑉(𝑟, 𝜃) = 𝜙/𝑟 + 1/𝑟 ∂𝜙/∂𝜃.
+b. Find the pressure at the surface of the cylinder, (𝑟 = 𝑅), using Bernoulli’s equation, making use of the fact that the pressure at the stagnation points (where 𝑉=0) is the stagnation pressure, 𝑝𝑠.
+c. Show that the coefficient of pressure, 𝑐𝑝 = 𝑝 − 𝑝∞ / ½𝜌𝑈^2, can be expressed in the form 𝑐𝑝 = 1 - 𝑉^2 / 𝑈^2.
+d. Plot the coefficient of pressure using Matlab or Excel for 0 < 𝜃 < 2𝜋.
+
+Problem 3: Added Mass
+
+Calculate the added mass coefficients 𝑚33 and 𝑚44 for a circular cylinder of radius 𝑅 = 1cm and length 𝐿 = 1m whose axis is along the 1 axis.
+
+Problem 4: Added Mass
+
+In lab, we discussed how added mass affects the natural frequency of a cylinder bobbing up and down under water.
+
+a. Write the equation for the natural frequency for this underwater spring-mass system.
+b. What do you expect to happen if the cylinder has a square cross section?
+
+Problem 5: Buoyancy and Added Mass
+
+A buoy consists of a large sphere of radius, a, under a circular cylinder of radius, r:
+[Figure Description: A simple schematic representation of a buoy. The buoy has a large sphere at the bottom and a long cylindrical neck protruding upwards from the sphere.]
+
+The added mass of the cylinder is negligible compared to that of the sphere:
+a. Write the equation of motion for heave. (Note: there is a force that increases linearly with depth.)
+b. What is the buoy’s natural frequency in heave.
+
+Problem 6: Buoyancy and Added Mass
+
+An offshore platform has the configuration shown:
+[Figure Description: A schematic representation of an offshore platform. The platform consists of a rectangular slab supported by cylindrical uprights and pontoons that are submerged underwater.]
+
+The diameter of the uprights is 10 m, and that of the pontoons is 10 m. The length of the pontoons is 100 m. The added mass of the uprights is negligible compared to that of the pontoons.
+a. Write the equation of motion for heave.
+b. What is the platform’s natural frequency in heave.

@@ -311,6 +311,38 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.prompts import HumanMessagePromptTemplate
 from langchain.schema.messages import SystemMessage
 
+RAW_ASSIGNMENT_PARSER_TEMPLATE = ChatPromptTemplate.from_messages(
+    [
+        SystemMessage(
+            content=(
+                "You have received an assignment from MIT OpenCourseware. Please parse the assignment and output the assignment title, assignment content, and each question no, question title, and question content in the following format."
+            )
+        ),
+        HumanMessagePromptTemplate.from_template("""
+Assignment:
+{assignment}
+                                                 
+Instruction:
+- Given the assignment above, output the assignment title, assignment content, and each question no, question title, and question content in the output schema below.
+- The assignment title and assignment content should be the same for all questions.
+- Output in JSON.
+
+Output Schema: (JSON)
+{{
+  "questions": [
+    {{
+      "assignment_title": "<assignment title>",
+      "assignment_content": "<assignment content>",
+      "question_no": "<numeric question number>",
+      "question_title": "<question title>",
+      "question_content": "<question content>"                                                                                        
+    }},
+    ... (more questions, if any)                                                                                          
+  ]                                                 
+}}"""),
+    ]
+)
+
 UNKNOWN_SOURCES_TEMPLATE = ChatPromptTemplate.from_messages(
     [
         SystemMessage(
@@ -427,6 +459,26 @@ import json
 import os
 from datetime import datetime
 
+def read_text_file(file_path):
+    """
+    Read a text file and return its content as a multi-line string.
+
+    Parameters:
+        file_path (str): The path to the text file to read.
+
+    Returns:
+        str: The content of the file as a multi-line string.
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            return file.read()
+    except FileNotFoundError:
+        return "The specified file could not be found."
+    except IOError:
+        return "An error occurred while reading the file."
+    except UnicodeDecodeError:
+        return "The file could not be decoded."
+
 # Function to save answers as JSON files
 def save_answers_to_folder(answers, folder_name):
     folder_path = f'./{folder_name}'
@@ -481,6 +533,13 @@ def run_generate_answer_agent_test():
 
     print(f"===== Outputs for the second set have been stored as JSON files in folder {folder_name2}. =====")
 
+def run_raw_assignment_parser_agent(raw_assignment):
+    answer = llm(RAW_ASSIGNMENT_PARSER_TEMPLATE.format_messages(
+            assignment=raw_assignment
+        ))
+    
+    return json.loads(answer.content)
+
 def run_unknown_source_agent(questions_assignment):
     # Loop to generate answers and save them to JSON files for the first set of questions
     answers1 = []
@@ -514,6 +573,45 @@ def run_generate_answer_agent(questions_assignment_with_wiki):
 
     return answers2
 
+def add_wiki(question):
+    question['wiki'] = ''
+    return question
+
 if __name__ == "__main__":
-    run_unknown_source_agent_test()
-    run_generate_answer_agent_test()
+    # Read the content from a text file located at 'example.txt'
+    raw_assignment = read_text_file("extracted_assignment_no1.txt")
+
+    # Print the content
+    print("===== RAW ASSIGNMENT =====")
+    print(raw_assignment)
+    print("==========================")
+
+    parsed_assignment = run_raw_assignment_parser_agent(raw_assignment)
+
+    print("===== PARSED ASSIGNMENT =====")
+    print(parsed_assignment)
+    print("=============================")
+    
+    questions = parsed_assignment['questions']
+
+    unknown_sources = run_unknown_source_agent(questions)
+
+    print("===== UNKNOWN SOURCES =====")
+    print(unknown_sources)
+    print("===========================")
+
+    questions_wiki = [add_wiki(question) for question in questions]
+    
+    print("===== QUESTION WIKI =====")
+    print(questions_wiki)
+    print("=========================")
+
+    generated_answers = run_generate_answer_agent(questions_wiki)
+
+    answers = generated_answers['answers']
+
+    print("===== ANSWERS =====")
+    print(answers)
+    print("===================")
+    # run_unknown_source_agent_test()
+    # run_generate_answer_agent_test()

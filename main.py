@@ -1,4 +1,3 @@
-
 import reasoner
 import find_pdf_on_web
 import os
@@ -23,4 +22,6 @@ def main():
     wget.download(pdf_url, "./problemset.pdf")
     text_extracted = gpt4v_api.extract_text_from_pdf("problemset.pdf")
     print(text_extracted)
-main()
+
+if __name__ == "__main__":
+    main()
