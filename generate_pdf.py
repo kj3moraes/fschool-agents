@@ -1,5 +1,4 @@
 from fpdf import FPDF
-import nltk
 
 QUESTIONS_WITH_WIKI = [
     {
