@@ -52,14 +52,14 @@ def find_textbook_link_googlev2(textbook_name):
     return pyperclip.paste()
 
 def generate_textbook_pdf(link):
-    response = requests.get(link)
-    response.raise_for_status()
+    try:
+        response = requests.get(link)
+        response.raise_for_status()
 
-    with open("downloaded_textbook.pdf", "wb") as f:
-        f.write(response.content)
-
-    # Extract text using PdfReader
-    text = extract_text("downloaded_textbook.pdf")
+        with open("downloaded_textbook.pdf", "wb") as f:
+            f.write(response.content)
+    except requests.exceptions.HTTPError as err:
+        print(link)
 
 
 def extract_pages(pdf_path, limit_pages=10):
@@ -121,82 +121,74 @@ def find_questions():
     match = re.search(pattern, source)
     textbook_name = match.group(1)
 
-    # link = find_textbook_link(textbook_name)
+    print(textbook_name)
+    link = find_textbook_link_googlev2(textbook_name)
+    print(link)
     # generate_textbook_pdf(link)
 
     questions_list = []
 
-    question_number = ""
-    for questions in pdf_questions:
-        source = questions['sources'][0]
-    question_number = ""
-    for questions in pdf_questions:
-        source = questions['sources'][0]
+    # question_number = ""
+    # for questions in pdf_questions:
+    #     source = questions['sources'][0]
+    # question_number = ""
+    # for questions in pdf_questions:
+    #     source = questions['sources'][0]
 
-        pattern = r'Problem (\d+\.\d+\.\d+)'
-        match = re.search(pattern, source)
-        question_number = match.group(1)
-        pattern = r'Problem (\d+\.\d+\.\d+)'
-        match = re.search(pattern, source)
-        question_number = match.group(1)
+    #     pattern = r'Problem (\d+\.\d+\.\d+)'
+    #     match = re.search(pattern, source)
+    #     question_number = match.group(1)
+    #     pattern = r'Problem (\d+\.\d+\.\d+)'
+    #     match = re.search(pattern, source)
+    #     question_number = match.group(1)
 
-        chapter, section, question = question_number.split(".")
-        print("-------------------")
-        print("-------------------")
-        print("-------------------")
-        print(chapter, section, question)
-        chapter, section, question = question_number.split(".")
-        print("-------------------")
-        print("-------------------")
-        print("-------------------")
-        print(chapter, section, question)
+    #     chapter, section, question = question_number.split(".")
+    #     print("-------------------")
+    #     print("-------------------")
+    #     print("-------------------")
+    #     print(chapter, section, question)
+    #     chapter, section, question = question_number.split(".")
 
 
-        pdf_path = "downloaded_textbook.pdf"
-        section_title = f"{chapter}.{section}"
-        excerpt = extract_pages(pdf_path)
-        pattern = fr"({section_title}.{{0,1500}})"
-        match = re.search(pattern, excerpt, re.DOTALL)
-        excerpt = match.group(1)
+    #     pdf_path = "downloaded_textbook.pdf"
+    #     section_title = f"{chapter}.{section}"
+    #     excerpt = extract_pages(pdf_path)
+    #     pattern = fr"({section_title}.{{0,500}})"
+    #     match = re.search(pattern, excerpt, re.DOTALL)
+    #     excerpt = match.group(1)
 
-        page_text = search_table_of_contents(excerpt, section_title)
-        # print(page_text)
-        page_text = search_table_of_contents(excerpt, section_title)
-        # print(page_text)
-
-
-        match = re.search(r"(\b\d+\b)(?!.*\b\d+\b)", page_text)
-        try:
-            page = int(match.group(1))
-        except AttributeError:
-            print("ERROR: Page not found.")
-            page = 312
-        match = re.search(r"(\b\d+\b)(?!.*\b\d+\b)", page_text)
-        try:
-            page = int(match.group(1))
-        except AttributeError:
-            print("ERROR: Page not found.")
-            page = 312
+    #     page_text = search_table_of_contents(excerpt, section_title)
+    #     # print(page_text)
+    #     page_text = search_table_of_contents(excerpt, section_title)
+    #     # print(page_text)
 
 
+    #     match = re.search(r"(\b\d+\b)(?!.*\b\d+\b)", page_text)
+    #     try:
+    #         page = int(match.group(1))
+    #     except AttributeError:
+    #         print("ERROR: Page not found.")
+    #         page = 312
+    #     match = re.search(r"(\b\d+\b)(?!.*\b\d+\b)", page_text)
+    #     try:
+    #         page = int(match.group(1))
+    #     except AttributeError:
+    #         print("ERROR: Page not found.")
+    #         page = 312
 
-        output = extract_section_pages(pdf_path, page)
-        pattern = fr"({question}(?:\.|\)).{{0,1000}})"
-        match = re.search(pattern, output, re.DOTALL)
-        output = extract_section_pages(pdf_path, page)
-        pattern = fr"({question}(?:\.|\)).{{0,1000}})"
-        match = re.search(pattern, output, re.DOTALL)
+
+    #     output = extract_section_pages(pdf_path, page)
+    #     pattern = fr"({question}(?:\.|\)).{{0,2000}})"
+    #     match = re.search(pattern, output, re.DOTALL)
 
 
-        try:
-            output = match.group(1)
-            question_content = extract_question(output, question)
-            is_real = is_real_question(output, question)
-            print(is_real)
-            questions_list.append(question_content)
-            print(question_content)
-        except AttributeError:
-            print("ERROR: Question not found.")
+    #     try:
+    #         output = match.group(1)
+    #         question_content = extract_question(output, question)
+    #         questions_list.append(question_content)
+    #         print(question_content)
+    #     except AttributeError:
+    #         print("ERROR: Question not found.")
     
     return questions_list
 
@@ -206,6 +198,6 @@ print("-------------------")
 my_list = find_questions()
 print(my_list)
 
-def main():
-    print(find_textbook_link_googlev2("Mathematical Statistics and Data Analysis John A. Rice"))
-main()
+# def main():
+#     print(find_textbook_link_googlev2("Mathematical Statistics and Data Analysis John A. Rice"))
+# main()
