@@ -1,7 +1,7 @@
 import PyPDF4
 from googlesearch import search
 import requests
-from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
+# from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
 from prompts import SEARCH_TABLE_OF_CONTENTS, EXTRACT_QUESTION
 from pdfminer.high_level import extract_text
 import re
@@ -12,8 +12,8 @@ import sys
 
 load_dotenv()
 
-CLAUDE_API_KEY = os.getenv("CLAUDE_API_KEY")
-anthropic = Anthropic(api_key=CLAUDE_API_KEY)
+# CLAUDE_API_KEY = os.getenv("CLAUDE_API_KEY")
+# anthropic = Anthropic(api_key=CLAUDE_API_KEY)
 
 def find_textbook_link(textbook_name):
     query = textbook_name + " PDF"
@@ -94,6 +94,11 @@ for questions in pdf_questions:
 
     pattern = r'Problem (\d+\.\d+\.\d+)'
     match = re.search(pattern, source)
+    for group in match.groups():
+        start_index = max(0, match.start() - 50)
+        end_index = match.end() + 300
+        surrounding_text = source[start_index:end_index]
+        print(f"Group: {group}, Surrounding Text: {surrounding_text}")
     question_number = match.group(1)
 
     chapter, section, question = question_number.split(".")
