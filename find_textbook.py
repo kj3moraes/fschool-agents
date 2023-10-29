@@ -1,8 +1,10 @@
-import PyPDF4
+import pyperclip
+import time
+import pyautogui
 from googlesearch import search
 import requests
 from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
-from prompts import SEARCH_TABLE_OF_CONTENTS, EXTRACT_QUESTION
+from prompts import SEARCH_TABLE_OF_CONTENTS, EXTRACT_QUESTION, REAL_QUESTION
 from pdfminer.high_level import extract_text
 import re
 import pdfreader
@@ -23,6 +25,31 @@ def find_textbook_link(textbook_name):
         return links[0]
     else:
         return None
+    
+def find_textbook_link_googlev2(textbook_name):
+    query = "textbook " + str(textbook_name) + " filetype:pdf -site:amazon"
+    pyautogui.keyDown('command')
+    pyautogui.press('space')
+    pyautogui.keyUp('command')
+    pyautogui.keyUp('Fn') # so we don't press the emoji bar
+    pyautogui.typewrite("https://www.google.com/")
+    pyautogui.press('enter')
+    time.sleep(2)
+    pyautogui.keyUp('Fn') # so we don't press the emoji bar
+    pyautogui.typewrite(query)
+    pyautogui.press('enter')
+    time.sleep(2)
+
+    pyautogui.press('tab', presses=21) # get to the first link
+    pyautogui.press('enter') # go to the link
+
+    pyautogui.keyDown('command')
+    pyautogui.press('l')
+    pyautogui.press('c')
+    pyautogui.keyUp('command')
+    time.sleep(1)
+
+    return pyperclip.paste()
 
 def generate_textbook_pdf(link):
     response = requests.get(link)
@@ -59,80 +86,126 @@ def extract_question(excerpt, question):
     )
     return completion.completion
 
-    # fsreasoner = reasoner.FancyStructuredReasoner(system_prompt="DO NOT OUTPUT ANY MORE TEXT AFTER ANSWERING THE PROMPT. BE A ROBOT.", model='gpt-3.5-turbo')
-    # fsreasoner.add_message("user", excerpt)
-    # return fsreasoner.extract_info("the text in page {x} is {x}", int)
-
 # textbook_name  = "The Elements of Statistical Learning: Data Mining, Inference, and Prediction by Trevor Hastie, Robert Tibshirani, and Jerome Friedman."
 # textbook_name = "John A. Rice, Third Edition."
 # chapter = "8"
 # section = "10"
 # question = "21"
 
-textbook_name = ""
-chapter = ""
-section = ""
-question = ""
+def is_real_question(excerpt, question):
+    completion = anthropic.completions.create(
+        model="claude-2",
+        max_tokens_to_sample=1000,
+        prompt=f"{HUMAN_PROMPT} {REAL_QUESTION} <excerpt>{excerpt}<excerpt> <question>{question}<question> {AI_PROMPT}",
+    )
+    return completion.completion
 
-# pdf_questions = [{'sources': ['John A. Rice, Third Edition. | Problem 8.10.21']}, 
-#                  {'sources': ['John A. Rice, Third Edition. | Problem 8.10.45', 'Rproject3.script4.Chromatin.r']}, 
-#                  {'sources': ['John A. Rice, Third Edition. | Problem 8.10.51']}, 
-#                  {'sources': ['John A. Rice, Third Edition. | Problem 8.10.58', 'Rproject3.script1.multinomial.simulation.r']}]
-pdf_questions = [{'sources': ['John A. Rice, Third Edition. | Problem 8.10.58', 'Rproject3.script1.multinomial.simulation.r']}]
+def find_questions():
+    textbook_name = ""
+    chapter = ""
+    section = ""
+    question = ""
 
-source = pdf_questions[0]['sources'][0]
-pattern = r'^(.*?)\s*\|'
-match = re.search(pattern, source)
-textbook_name = match.group(1)
+    pdf_questions = [{'sources': ['John A. Rice, Third Edition. | Problem 8.10.21']}, 
+                    {'sources': ['John A. Rice, Third Edition. | Problem 8.10.45', 'Rproject3.script4.Chromatin.r']}, 
+                    {'sources': ['John A. Rice, Third Edition. | Problem 8.10.51']}, 
+                    {'sources': ['John A. Rice, Third Edition. | Problem 8.10.58', 'Rproject3.script1.multinomial.simulation.r']}]
+    # pdf_questions = [{'sources': ['John A. Rice, Third Edition. | Problem 8.10.58', 'Rproject3.script1.multinomial.simulation.r']}]
 
-# link = find_textbook_link(textbook_name)
-# generate_textbook_pdf(link)
-
-question_number = ""
-for questions in pdf_questions:
-    source = questions['sources'][0]
-
-    pattern = r'Problem (\d+\.\d+\.\d+)'
+    source = pdf_questions[0]['sources'][0]
+    pattern = r'^(.*?)\s*\|'
     match = re.search(pattern, source)
-    question_number = match.group(1)
+    textbook_name = match.group(1)
+    source = pdf_questions[0]['sources'][0]
+    pattern = r'^(.*?)\s*\|'
+    match = re.search(pattern, source)
+    textbook_name = match.group(1)
 
-    chapter, section, question = question_number.split(".")
-    print("-------------------")
-    print("-------------------")
-    print("-------------------")
-    print(chapter, section, question)
+    # link = find_textbook_link(textbook_name)
+    # generate_textbook_pdf(link)
 
+    questions_list = []
 
-    pdf_path = "downloaded_textbook.pdf"
-    section_title = f"{chapter}.{section}"
-    excerpt = extract_pages(pdf_path)
-    pattern = fr"({section_title}.{{0,1000}})"
-    match = re.search(pattern, excerpt, re.DOTALL)
-    excerpt = match.group(1)
+    question_number = ""
+    for questions in pdf_questions:
+        source = questions['sources'][0]
+    question_number = ""
+    for questions in pdf_questions:
+        source = questions['sources'][0]
 
-    page_text = search_table_of_contents(excerpt, section_title)
-    # print(page_text)
+        pattern = r'Problem (\d+\.\d+\.\d+)'
+        match = re.search(pattern, source)
+        question_number = match.group(1)
+        pattern = r'Problem (\d+\.\d+\.\d+)'
+        match = re.search(pattern, source)
+        question_number = match.group(1)
 
-
-    match = re.search(r"(\b\d+\b)(?!.*\b\d+\b)", page_text)
-    try:
-        page = int(match.group(1))
-    except AttributeError:
-        print("ERROR: Page not found.")
-        page = 312
-
-
-
-    output = extract_section_pages(pdf_path, page)
-    pattern = fr"({question}(?:\.|\)).{{0,1000}})"
-    match = re.search(pattern, output, re.DOTALL)
-
-
-    try:
-        output = match.group(1)
-        question_content = extract_question(output, question)
-        print(question_content)
-    except AttributeError:
-        print("ERROR: Question not found.")
+        chapter, section, question = question_number.split(".")
+        print("-------------------")
+        print("-------------------")
+        print("-------------------")
+        print(chapter, section, question)
+        chapter, section, question = question_number.split(".")
+        print("-------------------")
+        print("-------------------")
+        print("-------------------")
+        print(chapter, section, question)
 
 
+        pdf_path = "downloaded_textbook.pdf"
+        section_title = f"{chapter}.{section}"
+        excerpt = extract_pages(pdf_path)
+        pattern = fr"({section_title}.{{0,1500}})"
+        match = re.search(pattern, excerpt, re.DOTALL)
+        excerpt = match.group(1)
+
+        page_text = search_table_of_contents(excerpt, section_title)
+        # print(page_text)
+        page_text = search_table_of_contents(excerpt, section_title)
+        # print(page_text)
+
+
+        match = re.search(r"(\b\d+\b)(?!.*\b\d+\b)", page_text)
+        try:
+            page = int(match.group(1))
+        except AttributeError:
+            print("ERROR: Page not found.")
+            page = 312
+        match = re.search(r"(\b\d+\b)(?!.*\b\d+\b)", page_text)
+        try:
+            page = int(match.group(1))
+        except AttributeError:
+            print("ERROR: Page not found.")
+            page = 312
+
+
+
+        output = extract_section_pages(pdf_path, page)
+        pattern = fr"({question}(?:\.|\)).{{0,1000}})"
+        match = re.search(pattern, output, re.DOTALL)
+        output = extract_section_pages(pdf_path, page)
+        pattern = fr"({question}(?:\.|\)).{{0,1000}})"
+        match = re.search(pattern, output, re.DOTALL)
+
+
+        try:
+            output = match.group(1)
+            question_content = extract_question(output, question)
+            is_real = is_real_question(output, question)
+            print(is_real)
+            questions_list.append(question_content)
+            print(question_content)
+        except AttributeError:
+            print("ERROR: Question not found.")
+    
+    return questions_list
+
+print("-------------------")
+print("-------------------")
+print("-------------------")
+my_list = find_questions()
+print(my_list)
+
+def main():
+    print(find_textbook_link_googlev2("Mathematical Statistics and Data Analysis John A. Rice"))
+main()

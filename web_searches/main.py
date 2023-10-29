@@ -3,16 +3,26 @@ from .aggregate import *
 from pathlib import Path
 from .search import *
 
-def get_answers(questions: list, question_unknowns: Dict[str, list], textbook=None):
+def get_answers(questions: List):
+
+    # num_questions = len(questions)
+
+    # all_unknowns = []
+    # for i, question in enumerate(questions):
+    #     with open(f"unknown_sources_20231028183019/unknown_sources_q{i}", "r+") as f:
+    #         unknown = json.load(f)
+    #         all_unknowns.append(unknown) 
 
     # q_ctx_from_textbook = {}
     # if textbook is not None:
-    #     for question in question:
-    #         pass
- 
+    #     for question in questions:
+    #         q_unknowns = question_unknowns[question]
+    #         print(q_unknowns)
+
+    # return
     for question in questions:
-        unknowns_for_question = question_unknowns[question]
-        rel_sources, rel_info = return_relevant_results(unknowns_for_question)   
+        # unknowns_for_question = question_unknowns[question]
+        rel_sources, rel_info = return_relevant_results(question)   
 
         rel_sources_str = json.dumps(rel_sources)
         rel_info_str = json.dumps(rel_info)

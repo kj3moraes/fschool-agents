@@ -27,3 +27,10 @@ EXTRACT_QUESTION = "You are given an excerpt from a textbook PDF, enclosed withi
                      "DO NOT INCLUDE ANY PRECEDING TEXT, SUCH AS THE QUESTION NUMBER, IN YOUR RESPONSE." \
                      "REMOVE THE EXCERPT TAGSFROMN YOUR RESPONSE."
 
+REAL_QUESTION = "You are given an excerpt from a textbook PDF, enclosed within the <excerpt> tags." \
+                "You are also given a question number, enclosed within the <question> tags. " \
+                "The excerpt shoud look like a textbook question, starting with the question number " \
+                "and includes the question description. " \
+                "RETURN TRUE IF THE EXCERPT IS A REAL QUESTION, AND FALSE IF IT IS NOT." \
+                "DO NOT OUTPUT MORE TEXT. BE A ROBOT."
+
