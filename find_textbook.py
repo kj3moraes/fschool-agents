@@ -63,52 +63,76 @@ def extract_question(excerpt, question):
     # fsreasoner.add_message("user", excerpt)
     # return fsreasoner.extract_info("the text in page {x} is {x}", int)
 
-
-textbook_name = "John A. Rice, Third Edition."
 # textbook_name  = "The Elements of Statistical Learning: Data Mining, Inference, and Prediction by Trevor Hastie, Robert Tibshirani, and Jerome Friedman."
-chapter = "8"
-section = "10"
-question = "21"
+# textbook_name = "John A. Rice, Third Edition."
+# chapter = "8"
+# section = "10"
+# question = "21"
+
+textbook_name = ""
+chapter = ""
+section = ""
+question = ""
+
+# pdf_questions = [{'sources': ['John A. Rice, Third Edition. | Problem 8.10.21']}, 
+#                  {'sources': ['John A. Rice, Third Edition. | Problem 8.10.45', 'Rproject3.script4.Chromatin.r']}, 
+#                  {'sources': ['John A. Rice, Third Edition. | Problem 8.10.51']}, 
+#                  {'sources': ['John A. Rice, Third Edition. | Problem 8.10.58', 'Rproject3.script1.multinomial.simulation.r']}]
+pdf_questions = [{'sources': ['John A. Rice, Third Edition. | Problem 8.10.58', 'Rproject3.script1.multinomial.simulation.r']}]
+
+source = pdf_questions[0]['sources'][0]
+pattern = r'^(.*?)\s*\|'
+match = re.search(pattern, source)
+textbook_name = match.group(1)
 
 # link = find_textbook_link(textbook_name)
 # generate_textbook_pdf(link)
 
-pdf_path = "downloaded_textbook.pdf"
-section_title = f"8.10"
-excerpt = extract_pages(pdf_path)
-pattern = fr"({section_title}.{{0,1000}})"
-match = re.search(pattern, excerpt, re.DOTALL)
-excerpt = match.group(1)
+question_number = ""
+for questions in pdf_questions:
+    source = questions['sources'][0]
 
-page_text = search_table_of_contents(excerpt, section_title)
-print(page_text)
+    pattern = r'Problem (\d+\.\d+\.\d+)'
+    match = re.search(pattern, source)
+    question_number = match.group(1)
 
-# text = "Based on the provided excerpt and section number, the page number containing Section 8.10 is 312."
-match = re.search(r"(\b\d+\b)(?!.*\b\d+\b)", page_text)
-try:
-    page = int(match.group(1))
-except AttributeError:
-    print("ERROR: Page not found.")
-    page = 312
+    chapter, section, question = question_number.split(".")
+    print("-------------------")
+    print("-------------------")
+    print("-------------------")
+    print(chapter, section, question)
 
 
+    pdf_path = "downloaded_textbook.pdf"
+    section_title = f"{chapter}.{section}"
+    excerpt = extract_pages(pdf_path)
+    pattern = fr"({section_title}.{{0,1000}})"
+    match = re.search(pattern, excerpt, re.DOTALL)
+    excerpt = match.group(1)
 
-output = extract_section_pages(pdf_path, page)
-pattern = fr"({question}(?:\.|\)).{{0,1000}})"
-match = re.search(pattern, output, re.DOTALL)
-
-
-try:
-    output = match.group(1)
-    question_content = extract_question(output, question)
-    print(question_content)
-except AttributeError:
-    print("ERROR: Question not found.")
+    page_text = search_table_of_contents(excerpt, section_title)
+    # print(page_text)
 
 
-# question_content = extract_question(output, question)
+    match = re.search(r"(\b\d+\b)(?!.*\b\d+\b)", page_text)
+    try:
+        page = int(match.group(1))
+    except AttributeError:
+        print("ERROR: Page not found.")
+        page = 312
 
-# # print(output)
-# print(question_content)
+
+
+    output = extract_section_pages(pdf_path, page)
+    pattern = fr"({question}(?:\.|\)).{{0,1000}})"
+    match = re.search(pattern, output, re.DOTALL)
+
+
+    try:
+        output = match.group(1)
+        question_content = extract_question(output, question)
+        print(question_content)
+    except AttributeError:
+        print("ERROR: Question not found.")
 
 
