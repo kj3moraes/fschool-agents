@@ -48,9 +48,9 @@ def main():
     print(questions_wiki)
     print("=========================")
 
-    generated_answers = run_generate_answer_agent(questions_wiki)
+    answers = run_generate_answer_agent(questions_wiki)
 
-    answers = generated_answers['answers']
+    # answers = generated_answers['answers']
 
     print("===== ANSWERS =====")
     print(answers)
