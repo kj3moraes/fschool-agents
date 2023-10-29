@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from metaphor_python import Metaphor
 import json 
-from .utils import fill_prompt, prompt_chatgpt
+from utils import fill_prompt, prompt_chatgpt
 import openai
 import yaml
 from pathlib import Path
@@ -26,7 +26,7 @@ def return_relevant_results(unknowns: list) -> Tuple[Dict, Dict]:
     for unknown in unknowns:
         # Get the relevant information for the client 
         response = client.search(unknown,
-            num_results=4,
+            num_results=3,
         )
  
         ids = []
