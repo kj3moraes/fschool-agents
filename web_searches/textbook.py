@@ -1,7 +1,7 @@
 import openai
 import os
 import PyPDF2
-from .utils import fill_prompt
+from utils import fill_prompt
 from pathlib import Path
 from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
 from typing import List

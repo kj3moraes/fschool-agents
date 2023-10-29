@@ -83,38 +83,35 @@ ANSWERS = [
     {"answers": [{"section": "a", "question": "State the Hardy-Weinberg principle.", "answer": "The Hardy-Weinberg principle, also known as Hardy-Weinberg equilibrium, is a principle in population genetics. It states that both allele and genotype frequencies in a population remain constant from generation to generation unless specific disturbing influences are introduced. These influences can include mutation, gene flow, genetic drift, non-random mating, and selection. The principle is based on a set of assumptions about an idealized population, including infinitely large population size, random mating, no mutation, no migration, and no natural selection."}, {"section": "b", "question": "Describe a situation where the principle would not hold for the Haptoglobin gene frequencies.", "answer": "The Hardy-Weinberg principle would not hold for the Haptoglobin gene frequencies if any of the assumptions of the principle are violated. For instance, if there is non-random mating in the population, the frequencies of the Haptoglobin gene may change over generations. Similarly, if there are mutations in the Haptoglobin gene, or if individuals with certain Haptoglobin gene types have a survival or reproductive advantage (natural selection), the gene frequencies may not remain constant. Migration of individuals into or out of the population can also disrupt the equilibrium."}]}
 ]
 
-def generate_pdf(title, content):
+def generate_pdf(questions_with_wiki, answers):
     pdf = FPDF()
     pdf.add_page()
+
+    title = questions_with_wiki[0]['assignment_title']
     
     # Set font and add title
     pdf.set_font("Arial", 'B', 16)
-    pdf.cell(0, 10, title, 0, 1, 'C')  # 'C' for center alignment
+    pdf.multi_cell(0, 10, title, 0, 1, 'C')  # 'C' for center alignment
     
     # Set font for content
     pdf.set_font("Arial", size=12)
     
-    for item in content:
-        question = item['question']
-        answer = item['answer']
-        
-        # Display question
-        pdf.set_fill_color(220, 220, 220)  # light gray background for questions
-        pdf.multi_cell(0, 10, question, 0, 'L', 1)  # 'L' for left alignment, 1 for filling the cell with the fill color
-        
-        # Display answer
-        pdf.multi_cell(0, 10, answer)
-        pdf.ln(5)  # space between Q&A pairs
+    for answer_item in answers:
+        for item in answer_item['answers']:
+            section = item['section']
+            question = item['question']
+            answer = item['answer']
+
+            answer = ''.join(c for c in answer if ord(c) < 256)
+            
+            # Display question
+            pdf.set_fill_color(220, 220, 220)  # light gray background for questions
+            pdf.multi_cell(0, 10, question, 0, 'L', 1)  # 'L' for left alignment, 1 for filling the cell with the fill color
+            
+            # Display answer
+            pdf.multi_cell(0, 10, answer)
+            pdf.ln(5)  # space between Q&A pairs
     
     pdf.output("answer.pdf")
 
-# Example Usage:
-content = [
-    {"question": "a. What is the capital of France?", "answer": "Answer: Paris."},
-    {"question": "b. Which planet is known as the Red Planet?", "answer": "Answer: Mars."}
-]
-
-course_code = "13.012"
-problem = "3"
-title = f"Course Code: {course_code}, Problem {problem}"
-generate_pdf(title, content)
+generate_pdf(QUESTIONS_WITH_WIKI, ANSWERS)
