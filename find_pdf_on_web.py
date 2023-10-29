@@ -118,8 +118,23 @@ def find_assignments_page_via_google2(course_code):
     pyautogui.typewrite(query)
     pyautogui.press('enter')
     time.sleep(2)
-    pyautogui.press('tab', presses=21)
+
+    # find the result on google
+    pyautogui.keyDown('command')
+    pyautogui.press('f')
+    pyautogui.keyUp('command')
+    page_query = "pages › assignments"
+    pyautogui.keyUp('Fn') # so we don't press the emoji bar
+    pyautogui.typewrite(page_query)
     pyautogui.press('enter')
+    pyautogui.press('escape')
+    pyautogui.press('tab')
+    pyautogui.keyDown('shift') # get to the link
+    pyautogui.press('tab')
+    pyautogui.keyUp('shift')
+
+    # pyautogui.press('tab', presses=21)
+    pyautogui.press('enter') # go to the link
 
     pyautogui.keyDown('command')
     pyautogui.press('l')
@@ -224,6 +239,6 @@ async def main():
 # asyncio.run(main())
 
 def main2():
-    print(find_assignments_page_via_google2("13.012"))
+    print(find_assignments_page_via_google2("18.650"))
 
 # main2()
