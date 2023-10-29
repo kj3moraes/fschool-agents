@@ -1,7 +1,7 @@
 import pyperclip
 import time
 import pyautogui
-from googlesearch import search
+# from googlesearch import search
 import requests
 from anthropic import Anthropic, HUMAN_PROMPT, AI_PROMPT
 from prompts import SEARCH_TABLE_OF_CONTENTS, EXTRACT_QUESTION, REAL_QUESTION

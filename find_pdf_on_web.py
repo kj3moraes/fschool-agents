@@ -1,6 +1,6 @@
 import asyncio
 import time
-from googlesearch import search
+# from googlesearch import search
 import pyperclip  # handy cross-platform clipboard text handler
 import wget
 from serpapi import GoogleSearch

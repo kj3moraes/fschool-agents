@@ -3,6 +3,8 @@ import find_pdf_on_web
 import os
 import wget
 import gpt4v_api
+from agent import run_raw_assignment_parser_agent, run_unknown_source_agent, run_generate_answer_agent, add_wiki
+from generate_pdf import generate_pdf
 
 def main():
     os.environ["OPENAI_API_KEY"] = open('openai_key.txt', 'r').read().strip('\n')
@@ -21,7 +23,40 @@ def main():
         os.remove("./problemset.pdf")
     wget.download(pdf_url, "./problemset.pdf")
     text_extracted = gpt4v_api.extract_text_from_pdf("problemset.pdf")
+
+    print("===== TEXT EXTRACTED =====")
     print(text_extracted)
+    print("==========================")
+
+    parsed_assignment = run_raw_assignment_parser_agent(text_extracted)
+
+    print("===== PARSED ASSIGNMENT =====")
+    print(parsed_assignment)
+    print("=============================")
+    
+    questions = parsed_assignment['questions']
+
+    # unknown_sources = run_unknown_source_agent(questions)
+
+    # print("===== UNKNOWN SOURCES =====")
+    # print(unknown_sources)
+    # print("===========================")
+
+    questions_wiki = [add_wiki(question) for question in questions]
+    
+    print("===== QUESTION WIKI =====")
+    print(questions_wiki)
+    print("=========================")
+
+    generated_answers = run_generate_answer_agent(questions_wiki)
+
+    answers = generated_answers['answers']
+
+    print("===== ANSWERS =====")
+    print(answers)
+    print("===================")
+
+    generate_pdf(questions_wiki, answers)
 
 if __name__ == "__main__":
     main()
