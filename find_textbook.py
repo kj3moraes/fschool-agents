@@ -15,8 +15,8 @@ import sys
 
 load_dotenv()
 
-# CLAUDE_API_KEY = os.getenv("CLAUDE_API_KEY")
-# anthropic = Anthropic(api_key=CLAUDE_API_KEY)
+CLAUDE_API_KEY = os.getenv("CLAUDE_API_KEY")
+anthropic = Anthropic(api_key=CLAUDE_API_KEY)
 
 def find_textbook_link(textbook_name):
     query = textbook_name + " PDF"
@@ -28,7 +28,6 @@ def find_textbook_link(textbook_name):
         return None
     
 def find_textbook_link_googlev2(textbook_name):
-    # query = "assignment page for MIT opencourseware course code pages/assignments/ " + str(course_code) + "  site:mit.edu"
     query = "textbook " + str(textbook_name) + " filetype:pdf -site:amazon"
     pyautogui.keyDown('command')
     pyautogui.press('space')
@@ -42,21 +41,7 @@ def find_textbook_link_googlev2(textbook_name):
     pyautogui.press('enter')
     time.sleep(2)
 
-    # find the result on google
-    # pyautogui.keyDown('command')
-    # pyautogui.press('f')
-    # pyautogui.keyUp('command')
-    # page_query = "pages › assignments"
-    # pyautogui.keyUp('Fn') # so we don't press the emoji bar
-    # pyautogui.typewrite(page_query)
-    # pyautogui.press('enter')
-    # pyautogui.press('escape')
-    # pyautogui.press('tab')
-    # pyautogui.keyDown('shift') # get to the link
-    # pyautogui.press('tab')
-    # pyautogui.keyUp('shift')
-
-    pyautogui.press('tab', presses=21)
+    pyautogui.press('tab', presses=21) # get to the first link
     pyautogui.press('enter') # go to the link
 
     pyautogui.keyDown('command')
