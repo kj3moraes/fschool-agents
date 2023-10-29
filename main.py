@@ -7,7 +7,7 @@ import gpt4v_api
 
 def main():
     os.environ["OPENAI_API_KEY"] = open('openai_key.txt', 'r').read().strip('\n')
-    input_text = "[X=13.012], [Y=3]"
+    input_text = "[X=18.650], [Y=1]"
     fsreasoner = reasoner.FancyStructuredReasoner(system_prompt="DO NOT OUTPUT ANY MORE TEXT AFTER ANSWERING THE PROMPT. BE A ROBOT.", model='gpt-3.5-turbo')
     fsreasoner.add_message("user", input_text)
     course_code = fsreasoner.extract_info("the course code is X={x}", str)
