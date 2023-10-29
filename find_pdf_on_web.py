@@ -1,5 +1,7 @@
 import asyncio
+import time
 from googlesearch import search
+import pyperclip  # handy cross-platform clipboard text handler
 import wget
 from serpapi import GoogleSearch
 from bs4 import BeautifulSoup
@@ -7,6 +9,7 @@ import requests
 import os
 import format_questions
 import json
+import pyautogui
 
 
 os.environ["OPENAI_API_KEY"] = open('openai_key.txt', 'r').read().strip('\n')
@@ -25,7 +28,7 @@ def metaphor_search(information_to_find):
 
 def find_assignments_page(course_code):
     # query = "MIT opencourseware course code " + str(course_code) + ". assignments page site:mit.edu"
-    query = "MIT opencourseware course code " + str(course_code) + " name"
+    query = "MIT opencourseware https://ocw.mit.edu/courses/ \"" + str(course_code) + "\" assignments page"
     resp = metaphor_search(query).results
     print(resp)
     all_urls = [item.url for item in resp]
@@ -36,7 +39,7 @@ def find_assignments_page(course_code):
 
 def find_assignments_page_with_serp(course_code):
     apiKey = "367c7199e7d9478eb8f29b1a3e3f15b3c143ae053729d0a6ec5caabdf4e8073d"
-    query = "MIT opencourseware course code " + str(course_code) + " assignments page site:mit.edu"
+    query = "site:mit.edu MIT opencourseware course code " + str(course_code) + " assignments page"
     # query = "MIT opencourseware course code " + str(course_code) + " name"
     requests.get("https://serpapi.com/search?q=")
 
@@ -47,9 +50,13 @@ def find_assignments_page_with_serp(course_code):
         "gl": "us",
         "google_domain": "google.com",
         "api_key": apiKey,
+        "num": 20,
     }
 
-    return json.dumps(GoogleSearch(params).get_dict(), sort_keys=True, indent=4, separators=(',', ': '))
+    # return json.dumps(GoogleSearch(params).get_dict(), sort_keys=True, indent=4, separators=(',', ': '))
+    # return GoogleSearch(params).get_dict().get("organic_search")
+    res = GoogleSearch(params).get_dict().get("organic_results")
+    return [p.get("link") for p in res]
 
 def extract_all_urls(url):
     response = requests.get(url)
@@ -91,17 +98,59 @@ def get_download_url(url):
         print(f"Failed to retrieve the webpage. Status code: {response.status_code}")
 
 def find_assignments_page_via_google(course_code):
-    query = "assignment page for MIT opencourseware course code " + str(course_code) + " site:mit.edu"
-    links = list(search(query))
+    query = "assignment page for MIT opencourseware course code " + str(course_code) + "  site:mit.edu"
+    links = list(search(query, num=1, stop=1, pause=2))
     for url in links:
         if(url.endswith("pages/assignments/")):
             return url
+        
+def find_assignments_page_via_google2(course_code):
+    # query = "assignment page for MIT opencourseware course code pages/assignments/ " + str(course_code) + "  site:mit.edu"
+    query = "assignments page for course " + str(course_code) + " site:ocw.mit.edu"
+    pyautogui.keyDown('command')
+    pyautogui.press('space')
+    pyautogui.keyUp('command')
+    pyautogui.keyUp('Fn') # so we don't press the emoji bar
+    pyautogui.typewrite("https://www.google.com/")
+    pyautogui.press('enter')
+    time.sleep(2)
+    pyautogui.keyUp('Fn') # so we don't press the emoji bar
+    pyautogui.typewrite(query)
+    pyautogui.press('enter')
+    time.sleep(2)
+
+    # find the result on google
+    pyautogui.keyDown('command')
+    pyautogui.press('f')
+    pyautogui.keyUp('command')
+    page_query = "pages › assignments"
+    pyautogui.keyUp('Fn') # so we don't press the emoji bar
+    pyautogui.typewrite(page_query)
+    pyautogui.press('enter')
+    pyautogui.press('escape')
+    pyautogui.press('tab')
+    pyautogui.keyDown('shift') # get to the link
+    pyautogui.press('tab')
+    pyautogui.keyUp('shift')
+
+    # pyautogui.press('tab', presses=21)
+    pyautogui.press('enter') # go to the link
+
+    pyautogui.keyDown('command')
+    pyautogui.press('l')
+    pyautogui.press('c')
+    pyautogui.keyUp('command')
+    time.sleep(1)
+
+    return pyperclip.paste()
+
     
 
 def look_for_information(assignment_num, course_code):
     # # we need to import this after we use our openai key
     # from handkerchief import Handkerchief
-    assignments_page = find_assignments_page_via_google(course_code)
+    # assignments_page = find_assignments_page(course_code)
+    assignments_page = find_assignments_page_via_google2(course_code)
     print("assignments_page", assignments_page)
     # urls = extract_all_urls(assignments_page)
     page_text = extract_page_text(assignments_page)
@@ -190,6 +239,6 @@ async def main():
 # asyncio.run(main())
 
 def main2():
-    print(find_assignments_page_with_serp("13.012"))
+    print(find_assignments_page_via_google2("18.650"))
 
-main2()
+# main2()
