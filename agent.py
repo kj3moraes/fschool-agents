@@ -569,7 +569,7 @@ def run_generate_answer_agent(questions_assignment_with_wiki):
           wiki=question["wiki"]
         ))
         print(f"===== Generate answer agent no.{i} ran... =====")
-        answers2.append(answer.content)
+        answers2.append(json.loads(answer.content))
 
     return answers2
 
