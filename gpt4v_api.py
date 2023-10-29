@@ -75,7 +75,7 @@ def send_prompt():
     pyautogui.keyUp('shiftleft')
     time.sleep(3) # so the iamges finish uploading
     pyautogui.keyUp('Fn') # so we don't press the emoji bar
-    pyautogui.typewrite("extract the text from this pdf. put it inside a code block. If there is a figure, please describe it")
+    pyautogui.typewrite("extract the text from this pdf. put it inside a code block. If there is latex, output the proper latex")
     pyautogui.press('enter')
 
 def copy_text():
