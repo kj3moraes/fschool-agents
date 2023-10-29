@@ -1,6 +1,5 @@
 from fpdf import FPDF
 import json
-# import nltk
 
 QUESTIONS_WITH_WIKI = [
     {
